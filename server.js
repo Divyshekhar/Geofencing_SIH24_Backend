@@ -1,13 +1,30 @@
-const bodyParser = require('body-parser');
-const express = require ('express');
+const express = require('express');
+const connectDB = require('./config/db');
+
+const authRoutes = require('./routes/authRoutes');
+const geofenceRoutes = require('./routes/geofenceRoutes');
+const locationRoutes = require('./routes/locationRoutes');
+
+// Load environment variables
+require('dotenv').config();
 
 const app = express();
-app.use(bodyParser.json());
-app.get('/', (req,res) => {
-    res.send("the server is running")
-})
+
+// Connect to the database
+connectDB();
+
+// Middleware
+app.use(express.json());
+
+// Routes
+app.use('/auth', authRoutes);
+app.use('/geofences', geofenceRoutes);
+app.use('/locations', locationRoutes);
 
 
-app.listen(3000,() => [
-    console.log(`port connected`)
-])
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
