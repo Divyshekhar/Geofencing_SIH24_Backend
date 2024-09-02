@@ -1,24 +1,19 @@
 const express = require('express');
-const connectDB = require('./config/db');
-
+const db = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const geofenceRoutes = require('./routes/geofenceRoutes');
+const officeRoutes = require('./routes/officeRoutes');
 const locationRoutes = require('./routes/locationRoutes');
-
-// Load environment variables
+const attendanceRoutes = require ('./routes/attendanceRoutes');
 require('dotenv').config();
 
 const app = express();
 
-// Connect to the database
-connectDB();
 
-// Middleware
 app.use(express.json());
 
-// Routes
+app.use('/attedance', attendanceRoutes); // marks the attendance for the particular employee
 app.use('/auth', authRoutes);
-app.use('/geofences', geofenceRoutes);
+app.use('/office', officeRoutes); //gives the location data about the office
 app.use('/locations', locationRoutes);
 
 
