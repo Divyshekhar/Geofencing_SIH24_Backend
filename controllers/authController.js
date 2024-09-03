@@ -2,6 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+//need to set this up with the postgres data queries
+
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
 
