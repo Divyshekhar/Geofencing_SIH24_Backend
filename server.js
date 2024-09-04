@@ -1,22 +1,27 @@
 const express = require('express');
-const db = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const officeRoutes = require('./routes/officeRoutes');
-const locationRoutes = require('./routes/locationRoutes');
-require('./config/cron');
-const attendanceRoutes = require('./routes/attendanceRoutes');
-require('dotenv').config();
-
 const app = express();
+const db = require('./config/db')
+const employeeRoutes = require('./routes/employeeRoutes');  // Ensure this path is correct
+const officeRoutes = require('./routes/officeRoutes');      // Ensure this path is correct
+const attendanceRoutes = require('./routes/attendanceRoutes');      // Ensure this path is correct
 
 
 app.use(express.json());
 
-app.use('/attendance', attendanceRoutes); // marks the attendance for the particular employee
-app.use('/auth', authRoutes);
-app.use('/office', officeRoutes); //gives the location data about the office
-app.use('/locations', locationRoutes);
+app.get('/health', async (req, res) => {
 
+  try {
+    const offices = await db('offices').select('*');
+    res.status(200).json(offices);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+})
+
+app.use('/employee', employeeRoutes);  // Ensure employeeRoutes is a router object
+app.use('/office', officeRoutes);      // Ensure officeRoutes is a router object
+app.use('/attendance', attendanceRoutes);
 
 const PORT = process.env.PORT || 3000;
 

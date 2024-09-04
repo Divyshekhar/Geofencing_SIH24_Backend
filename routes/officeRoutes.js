@@ -1,20 +1,10 @@
 const express = require('express');
-const {
-  createGeofence,
-  getGeofences,
-  getGeofence,
-  updateGeofence,
-  deleteGeofence,
-  getOfficeData,
-} = require('../controllers/officeController');
-// const authenticate = require('../middlewares/authenticate');
-
 const router = express.Router();
+const officeController = require('../controllers/officeController')
 
-router.get('/:id', getOfficeData);
-// router.get('/', authenticate, getGeofences);
-// router.get('/:id', authenticate, getGeofence);
-// router.put('/:id', authenticate, updateGeofence);
-// router.delete('/:id', authenticate, deleteGeofence);
+router.post('/', officeController.createOffice);
+router.get('/:id', officeController.getOffice);
+router.patch('/:id', officeController.updateOffice);
+router.delete('/:id', officeController.deleteOffice);
 
 module.exports = router;

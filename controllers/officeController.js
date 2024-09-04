@@ -1,74 +1,80 @@
 const db = require('../config/db');
 
-exports.getOfficeData = async (req, res) => {
-  try {
-      const query = 'SELECT longitude, latitude, radius FROM offices WHERE id = $1';
-      const values = [req.params.id]; //passing ID of specific office
+exports.createOffice = async (req, res) => {
+    const { name, longitude, latitude, radius } = req.body;
+    if (!name || !latitude || !longitude || !radius) {
+        return res.status(400).json({ message: 'Name, latitude, longitude and radius are required' });
+    }
+    try {
+        // Insert the new office into the database using Knex
+        const [newOfficeId] = await db('offices')
+            .insert({ name, longitude, latitude, radius })
+            .returning('id');
 
-      const result = await db.query(query, values);
-
-      if (result.rows.length === 0) {
-          return res.status(404).json({ error: 'Geofence not found' });
-      }
-
-      const geofenceData = result.rows[0];
-      res.status(200).json(geofenceData);
-  } catch (error) {
-      console.error('Error fetching geofence data:', error);
-      res.status(500).json({ error: 'Failed to fetch geofence data' });
-  }
+        res.status(201).json({
+            message: 'Office created successfully',
+            office: {
+                id: newOfficeId,
+                name,
+                longitude,
+                latitude,
+                radius
+            }
+        });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: error });
+    }
 };
-//-----------------------------------------------------------------------------
-// exports.getGeofences = async (req, res) => {
-//   try {
-//     const geofences = await Geofence.find();
-//     res.json(geofences);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// };
 
-// exports.getGeofence = async (req, res) => {
-//   try {
-//     const geofence = await Geofence.findById(req.params.id);
-//     if (!geofence) {
-//       return res.status(404).json({ error: 'Geofence not found' });
-//     }
-//     res.json(geofence);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// };
+exports.getOffice = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const office = await db('offices').where({ id }).first();
+        if (!office) {
+            return res.status(404).json({ message: 'Office not found' });
+        }
+        res.status(200).json(office);
+    }
+    catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
-// exports.updateGeofence = async (req, res) => {
-//   const { name, latitude, longitude, radius } = req.body;
+exports.updateOffice = async (req, res) => {
+    const { id } = req.params;
+    const { name, longitude, latitude, radius } = req.body;
+    try {
+        const [updatedOffice] = await db('offices')
+            .where({ id })
+            .update({ name, longitude, latitude, radius })
+            .returning('*');
 
-//   try {
-//     const geofence = await Geofence.findByIdAndUpdate(
-//       req.params.id,
-//       { name, latitude, longitude, radius },
-//       { new: true }
-//     );
+        if (!updatedOffice) {
+            return res.status(404).json({ message: 'Office not found' });
+        }
 
-//     if (!geofence) {
-//       return res.status(404).json({ error: 'Geofence not found' });
-//     }
+        res.status(200).json(updatedOffice);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
-//     res.json(geofence);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// };
 
-// exports.deleteGeofence = async (req, res) => {
-//   try {
-//     const geofence = await Geofence.findByIdAndDelete(req.params.id);
-//     if (!geofence) {
-//       return res.status(404).json({ error: 'Geofence not found' });
-//     }
+exports.deleteOffice = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedOffice = await db('offices').where({ id }).del();
 
-//     res.json({ message: 'Geofence deleted successfully' });
-//   } catch (err) {
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// };
+        if (deletedOffice === 0) {
+            return res.status(404).json({ message: 'Office not found' });
+        }
+
+        res.status(200).json({ message: 'Office deleted successfully' });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
