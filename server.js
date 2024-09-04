@@ -11,10 +11,10 @@ app.use(express.json());
 app.get('/health', async (req, res) => {
 
   try {
-    const offices = await db('offices').select('*');
-    res.status(200).json(offices);
+    
+    res.status(200).json("Connection to server successful");
   } catch (error) {
-    console.error('Database error:', error);
+    console.error('Connect error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 })
