@@ -3,6 +3,7 @@ const router = express.Router();
 const attendanceController = require('../controllers/attendanceController');
 
 router.post('/', attendanceController.markLogs);
+// router.post('/', attendanceController.markAttendance);
 router.post('/hours', attendanceController.calculateTotalWorkingHours);
 router.get('/all', attendanceController.allAttendance);
 module.exports = router;
