@@ -78,3 +78,23 @@ exports.deleteOffice = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.getAll = async(req, res) => {
+    try{
+        const result = await db('offices').select('*');
+
+        if(result.length > 0){
+            return res.status(200).json(result);
+        }
+        else {
+            return res.status(404).json({ message: 'No offices found' });
+        }
+    } catch(error){
+    console.error('Error retrieving offices:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+

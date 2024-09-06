@@ -29,10 +29,10 @@ exports.createEmployee = async (req, res) => {
 };
 
 exports.getEmployee = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
 
-    try{
-        const employee = await db('employees').where({id}).first();
+    try {
+        const employee = await db('employees').where({ id }).first();
         if (!employee) {
             return res.status(404).json({ message: 'Employee not found' });
         }
@@ -40,13 +40,13 @@ exports.getEmployee = async (req, res) => {
     }
     catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Internal server error'});
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
-exports.updateEmployee = async(req, res) => {
-    const {id} = req.params;
-    const{name, email, office_id} = req.body;
+exports.updateEmployee = async (req, res) => {
+    const { id } = req.params;
+    const { name, email, office_id } = req.body;
     try {
         const updatedEmployee = await db('employees')
             .where({ id })
@@ -80,4 +80,52 @@ exports.deleteEmployee = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+exports.getOfficeCoordinates = async (req, res) => {
+    const { id } = req.params;  // Extract employeeId from request parameters
 
+    try {
+        const result = await db('employees')
+            .join('offices', 'employees.office_id', 'offices.id')
+            .select('offices.longitude', 'offices.latitude')
+            .where('employees.id', id)
+            .first();
+
+        if (result) {
+            // Send the longitude and latitude as the response
+            return res.status(200).json({
+                longitude: result.longitude,
+                latitude: result.latitude
+            });
+        } else {
+            return res.status(404).json({ message: 'Employee or office not found' });
+        }
+    } catch (error) {
+        // Handle the error and return a 500 response with the error message
+        console.error('Error retrieving office coordinates:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+exports.allEmployee = async (req, res) => {
+    try {
+        // Fetch all employees from the 'employees' table
+        const employees = await db('employees').select('*');
+
+        // If employees are found, return them in the response
+        if (employees.length > 0) {
+            return res.status(200).json(employees);
+        } else {
+            // If no employees are found, return a 404 status
+            return res.status(404).json({ message: 'No employees found' });
+        }
+    } catch (error) {
+        // Log the error and return a 500 status with the error message
+        console.error('Error retrieving employees:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};

@@ -19,7 +19,7 @@ app.get('/health', async (req, res) => {
   }
 })
 
-app.use('/employee', employeeRoutes);  // Ensure employeeRoutes is a router object
+app.use('/employee', employeeRoutes); // Ensure employeeRoutes is a router object
 app.use('/office', officeRoutes);      // Ensure officeRoutes is a router object
 app.use('/attendance', attendanceRoutes);
 
