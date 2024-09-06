@@ -145,3 +145,21 @@ exports.calculateTotalWorkingHours = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+exports.allAttendance = async(req, res) => {
+    try{
+        const result = await db('attendance_logs').select('*');
+
+        if(result.length > 0){
+            return res.status(200).json(result);
+        }
+        else {
+            return res.status(404).json({ message: 'No attendance found' });
+        }
+    } catch(error){
+    console.error('Error retrieving attendance:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
