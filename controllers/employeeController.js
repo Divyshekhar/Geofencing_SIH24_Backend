@@ -32,7 +32,7 @@ exports.getEmployee = async (req, res) => {
     const {id} = req.params;
 
     try{
-        const employee = await db('employess').where({id}).first();
+        const employee = await db('employees').where({id}).first();
         if (!employee) {
             return res.status(404).json({ message: 'Employee not found' });
         }
@@ -40,7 +40,7 @@ exports.getEmployee = async (req, res) => {
     }
     catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error'});
     }
 };
 
