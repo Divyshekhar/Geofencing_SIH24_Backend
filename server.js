@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
 const db = require('./config/db')
-const employeeRoutes = require('./routes/employeeRoutes');  // Ensure this path is correct
-const officeRoutes = require('./routes/officeRoutes');      // Ensure this path is correct
-const attendanceRoutes = require('./routes/attendanceRoutes');      // Ensure this path is correct
+const employeeRoutes = require('./routes/employeeRoutes');  
+const officeRoutes = require('./routes/officeRoutes');     
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 
 app.use(express.json());
@@ -19,8 +19,8 @@ app.get('/health', async (req, res) => {
   }
 })
 
-app.use('/employee', employeeRoutes); // Ensure employeeRoutes is a router object
-app.use('/office', officeRoutes);      // Ensure officeRoutes is a router object
+app.use('/employee', employeeRoutes); 
+app.use('/office', officeRoutes);     
 app.use('/attendance', attendanceRoutes);
 
 const PORT = process.env.PORT || 3000;

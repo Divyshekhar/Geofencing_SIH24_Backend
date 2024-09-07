@@ -6,4 +6,5 @@ router.post('/', attendanceController.markLogs);
 // router.post('/', attendanceController.markAttendance);
 router.post('/hours', attendanceController.calculateTotalWorkingHours);
 router.get('/all', attendanceController.allAttendance);
+router.get('/allhours', attendanceController.allHourlyAttendance);
 module.exports = router;
