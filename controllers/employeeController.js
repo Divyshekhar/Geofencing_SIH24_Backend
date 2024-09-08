@@ -168,7 +168,7 @@ exports.createEmployeeWithPassword = async (req, res) => {
 
 exports.verifyPassword = async (req, res) => {
     const { id } = req.params;  // Extract employeeId from the request parameters
-    const { inputPassword } = req.body;  // Extract input password from the request body
+    const { password } = req.body;  // Extract input password from the request body
 
     try {
         // Get the hashed password from user_credentials for the given employee_id
@@ -180,18 +180,27 @@ exports.verifyPassword = async (req, res) => {
         if (!userCredential) {
             return res.status(404).json({ message: 'User not found' });
         }
+        const hashedPassword = userCredential.password;
+
+        // Check if the hashed password is retrieved properly
+        if (!hashedPassword) {
+            throw new Error('Hashed password not found');
+        }
 
         // Compare the input password with the hashed password
-        const isMatch = await bcrypt.compare(inputPassword, userCredential.password);
+        const isMatch = await bcrypt.compare(password, hashedPassword);
 
         if (isMatch) {
-            return res.status(200).json({ message: 'Password is correct' });
+            return res.status(200).json({ message: 'Sign-in successful' });
         } else {
             return res.status(401).json({ message: 'Incorrect password' });
         }
     } catch (error) {
-        console.error('Error verifying password:', error);
-        return res.status(500).json({ message: 'Internal server error', error: error.message });
+        console.error('Error during sign-in:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
     }
 };
 
